@@ -1,0 +1,269 @@
+﻿<?php
+session_start();
+
+if(!$_SESSION['LoginID']) {
+	echo "<script>alert('로그인이 필요한 서비스입니다.'); </script>";
+	echo "<script> document.location.href='http://".$_SERVER['SERVER_NAME']."/kh';</script>";
+} else {	
+	$conn = mysql_connect("localhost","root","qwer1234");
+	mysql_select_db("Avengers");
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="js/jquery.mobile-1.4.5.css" />
+	<link rel="stylesheet" href="panel-list.css">
+	<script src="js/jquery-1.11.3.js"></script>
+	<script src="js/jquery.mobile-1.4.5.js"></script>
+</head>
+<body>
+<div data-role="page" id="fw_index">
+
+	<div data-role="header">
+		<h1>방화벽 설정</h1>
+		<a href="#left-panel" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-left ui-icon-bars">메뉴</a>
+		<a href="index.php" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-right ui-icon-home" data-transition="slidedown">홈</a>
+	</div><!-- /header -->
+
+	<div role="main" class="ui-content">
+		<div id="resetBox" style="width: 100%;">
+			<div style="float: left;"></div>
+			<div style="float: right;"><button onClick="location.replace('firewallf.php')" class="ui-btn ui-corner-all ui-shadow ui-mini">정책 초기화</button></div>
+		</div>
+		
+		<div class="ui-grid-b">
+		<form name="tcpFtr" method="POST" action="firewall_tcpchk.php">
+			<div class="ui-block-a">
+			<?php
+			$addr1 = "http:/";
+			$addr2="kh/firewalltcp.php";
+			$sumAddr = array($addr1, $_SERVER['SERVER_NAME'], $addr2);
+			$finalAddr = implode("/", $sumAddr);
+			
+			if($_SERVER["HTTP_REFERER"]==$finalAddr) {
+				echo "<input name='chk_flags' id='tcpfiter' type='checkbox' data-mini='true' checked><label for='tcpfiter'>비정상적인 tcp-flags 차단</label>";
+			} else {
+				echo "<input name='chk_flags' id='tcpfiter' type='checkbox' data-mini='true'><label for='tcpfiter'>비정상적인 tcp-flags 차단</label>";
+			}
+			?>
+			</div>
+			<div class="ui-block-b"><input style="width: 100px;" type="submit" value="적용" data-mini="true"></div>
+		</form>
+		</div>
+		
+		<div class="ui-grid-b">
+		<form name="nmapFtr" method="POST" action="firewall_nmapchk.php">
+			<div class="ui-block-a">
+			<?php
+			$addr3 = "http:/";
+			$addr4="kh/firewallnmap.php";
+			$sumAddr2 = array($addr3, $_SERVER['SERVER_NAME'], $addr4);
+			$finalAddr2 = implode("/", $sumAddr2);
+			
+			if($_SERVER["HTTP_REFERER"]==$finalAddr2) {
+				echo "<input name='chk_nmap' id='nmapfiter' type='checkbox' data-mini='true' checked><label for='nmapfiter'>nmap 차단</label>";
+			} else {
+				echo "<input name='chk_nmap' id='nmapfiter' type='checkbox' data-mini='true'><label for='nmapfiter'>nmap 차단</label>";
+			}
+			?>
+			</div>
+			<div class="ui-block-b"><input style="width: 100px;" type="submit" value="적용" data-mini="true"></div>
+		</form>
+		</div>
+		
+		<br><br>
+		<script>
+		function sbmt(mode){
+			if(mode == "add"){
+				iptb.action = "firewall_insert.php";
+			} else if(mode == "delete"){
+				iptb.action = "firewall_delete.php";
+			}
+			iptb.submit();
+		}
+		</SCRIPT>
+		<form name="iptb" method="POST">
+			<div class="ui-body ui-body-b ui-corner-all">
+				<div class="ui-grid-b">
+				<div class="ui-block-a"><select name="select_inf" data-mini="true" data-native-menu="false" >
+					<option value="">인터페이스</option>
+					<option value="eth0">eth0</option>
+					<option value="eth1">eth1</option>
+				</select></div>
+				<div class="ui-block-b"><select name="select_chain" data-mini="true" data-native-menu="false" >
+					<option value="">인바운드/아웃바운드</option>
+					<option value="INPUT">input</option>
+					<option value="OUTPUT">output</option>
+				</select></div>
+				<div class="ui-block-c"><select name="select_proto" data-mini="true" data-native-menu="false" >
+					<option value="">프로토콜</option>
+					<option value="tcp">TCP</option>
+					<option value="udp">udp</option>
+					<option value="icmp">icmp</option>
+					<option value="all">all</option>
+				</select></div>
+				</div><!-- /grid-b -->
+			</div><!-- /body-b -->
+
+			<div class="ui-body ui-body-a ui-corner-all">
+			<br>
+				<div class="ui-grid-d">
+					<div class="ui-block-a">&nbsp;&nbsp;허용할 출발지 IP</div>
+					<div class="ui-block-b"> </div> <div class="ui-block-c"> </div> <div class="ui-block-d"> </div>
+					<div class="ui-block-e" style="text-align: center;">Netmask</div>
+				</div><!-- /grid-d -->
+		
+				<div class="ui-grid-d">
+					<div class="ui-block-a"><input name="ip1" type="text" maxlength="3" data-mini="true" data-clear-btn="true"></div>
+					<div class="ui-block-b"><input name="ip2" type="text" maxlength="3" data-mini="true" data-clear-btn="true"></div>
+					<div class="ui-block-c"><input name="ip3" type="text" maxlength="3" data-mini="true" data-clear-btn="true"></div>
+					<div class="ui-block-d"><input name="ip4" type="text" maxlength="3" data-mini="true" data-clear-btn="true"></div>
+					<div class="ui-block-e" style="text-align: center;">
+						<fieldset data-role="controlgroup" data-type="horizontal">
+							<select name="select_srcmask" data-mini="true" data-native-menu="false">
+								<option value="0">&nbsp;&nbsp;0&nbsp;&nbsp;</option>
+								<option value="8">&nbsp;&nbsp;8&nbsp;&nbsp;</option>
+								<option value="16">&nbsp;&nbsp;16&nbsp;&nbsp;</option>
+								<option value="24">&nbsp;&nbsp;24&nbsp;&nbsp;</option>
+								<option value="32">&nbsp;&nbsp;32&nbsp;&nbsp;</option>
+							</select>
+						</fieldset>
+					</div><!-- /block-e -->
+				</div><!-- /grid-d -->
+			
+				<div class="ui-grid-d">
+					<div class="ui-block-a"> </div><div class="ui-block-b"> </div>
+					<div class="ui-block-c" style="text-align: right; padding: 13px;">출발지 포트</div>
+					<div class="ui-block-d"><input name="srcport" type="text" maxlength="11" data-mini="true" data-clear-btn="true"></div>
+					<div class="ui-block-e" style="text-align: left;">
+						<a class="ui-shadow ui-btn ui-corner-all ui-icon-info ui-btn-icon-notext ui-btn-inline" href="#portInfo" data-rel="popup" data-transition="flip">Flip</a>
+						<div id="portInfo" data-role="popup"><p>포트번호 또는 대역(ex.65433) 또는 모든 포트 any 입력</p></div>
+					</div>
+				</div><!-- /grid-d -->
+			
+			<hr style="border: 1px dashed #bbbbbb" />
+			<br>
+			
+			<div class="ui-grid-d">
+				<div class="ui-block-a">&nbsp;&nbsp;허용할 도착지 IP</div>
+				<div class="ui-block-b"> </div> <div class="ui-block-c"> </div> <div class="ui-block-d"> </div>
+				<div class="ui-block-e" style="text-align: center;">Netmask</div>
+			</div><!-- /grid-d -->
+		
+			<div class="ui-grid-d">
+				<div class="ui-block-a"><input name="ip5" type="text" maxlength="3" data-mini="true" data-clear-btn="true"></div>
+				<div class="ui-block-b"><input name="ip6" type="text" maxlength="3" data-mini="true" data-clear-btn="true"></div>
+				<div class="ui-block-c"><input name="ip7" type="text" maxlength="3" data-mini="true" data-clear-btn="true"></div>
+				<div class="ui-block-d"><input name="ip8" type="text" maxlength="3" data-mini="true" data-clear-btn="true"></div>
+				<div class="ui-block-e" style="text-align: center;">
+					<fieldset data-role="controlgroup" data-type="horizontal">
+						<select name="select_dstmask" data-mini="true" data-native-menu="false">
+							<option value="0">&nbsp;&nbsp;0&nbsp;&nbsp;</option>
+							<option value="8">&nbsp;&nbsp;8&nbsp;&nbsp;</option>
+							<option value="24">&nbsp;&nbsp;24&nbsp;&nbsp;</option>
+							<option value="32">&nbsp;&nbsp;32&nbsp;&nbsp;</option>
+						</select>
+					</fieldset>
+				</div><!-- /block-e -->
+			</div><!-- /grid-d -->
+			
+			<div class="ui-grid-d">
+				<div class="ui-block-a"> </div><div class="ui-block-b"> </div>
+				<div class="ui-block-c" style="text-align: right; padding: 13px;">도착지 포트</div>
+				<div class="ui-block-d"><input name="dstport" type="text" maxlength="11" data-mini="true" data-clear-btn="true"></div>
+				<div class="ui-block-e" style="text-align: left;">
+					<a class="ui-shadow ui-btn ui-corner-all ui-icon-info ui-btn-icon-notext ui-btn-inline" href="#portInfo" data-rel="popup" data-transition="flip">Flip</a>
+					<div id="portInfo" data-role="popup"><p>포트번호 또는 대역(ex.65433) 또는 모든 포트 any 입력</p></div>
+				</div>
+			</div><!-- /grid-d -->
+
+			<br>
+			
+			<div class="ui-grid-d">
+				<div class="ui-block-a"> </div><div class="ui-block-b"> </div><div class="ui-block-c"> </div>
+				<div class="ui-block-d"><input type="button" value="추가" data-mini="true" onClick="sbmt('add')"></div>
+				<div class="ui-block-e"><input type="button" value="삭제" data-mini="true" onClick="sbmt('delete')"></div>
+			</div><!-- /grid-d -->
+		</form>
+			<br>
+			<table class="ui-responsive table-stroke" id="table-column-toggle" data-role="table" >
+				<thead>
+					<tr>
+						<th>Chain</th>
+						<th>Interface</th>
+						<th>Protocol</th>
+						<th>SrcIP</th>
+						<th>SrcNetMask</th>
+						<th>SrcPort</th>
+						<th>DstIP</th>
+						<th>DstNetMask</th>
+						<th>DstPort</th>
+					</tr>
+				</thead>
+			
+				<tbody>
+					<?php
+					$sql = "select * from firewall";
+					$return = mysql_query($sql);
+					while($result=mysql_fetch_array($return)){
+						echo "<tr>";
+						echo "<th>".$result['Chain']."</th>";
+						echo "<th>".$result['interface']."</th>";
+						echo "<th>".$result['Protocol']."</th>";
+						echo "<th>".$result['Srcip']."</th>";
+						echo "<th>".$result['srcnetamsk']."</th>";
+						echo "<th>".$result['srcport']."</th>";
+						echo "<th>".$result['dstip']."</th>";
+						echo "<th>".$result['dstnetmask']."</th>";
+						echo "<th>".$result['dstport']."</th>";
+						echo "</tr>";
+					}
+					
+					mysql_close($conn);
+					?>
+				</tbody>
+			</table>
+		</div><!-- /body-a -->
+
+	</div><!-- /content -->
+
+	<div data-role="footer">
+		<h4 style="color: #bbbbbb;">Hello</h4>
+	</div><!-- /footer -->
+	
+	<div data-role="panel" id="left-panel" data-position="left" data-display="overlay" style="background-color: #f2f2f2;">
+        <ul data-role="listview">
+        	<li data-icon="delete" data-theme="b"><a href="#" data-rel="close">Close</a></li>
+        	<li data-icon="back" data-theme="b"><a href="logout.php">Logout</a></li>
+			<li data-role="list-divider">Menu</li>
+			<li><a href="network.php">Network</a></li>
+			<li><a href="router.php">Routing</a></li>
+			<li data-role="collapsible" data-inset="false" data-iconpos="right">
+				<h2>Firewall</h2>
+				<ul data-role="listview">
+					<li><a href="firewall.php">PacketFilter</a></li>
+					<li><a href="firewall_web.php">WebFilter</a></li>
+					<li><a href="firewall_snat.php">SNAT</a></li>
+					<li><a href="firewall_dnat.php">DNAT</a></li>
+					<li><a href="firewall_masquerade.php">MASQUERADE</a></li>
+				</ul>
+			</li>
+			<li data-role="collapsible" data-inset="false" data-iconpos="right">
+				<h2>VPN</h2>
+				<ul data-role="listview">
+					<li><a href="vpn.php">User</a></li>
+					<li><a href="vpn_pptp.php">pptp</a></li>
+					<li><a href="vpn_openvpn.php">openvpn</a></li>
+				</ul>
+			</li>
+			<li><a href="log.php">Log</a></li>
+			<li><a href="monitoring.php">Monitoring</a></li>
+		</ul>
+    </div><!-- /panel -->
+
+</div><!-- /page -->
+</body>
+</html>

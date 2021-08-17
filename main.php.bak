@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<!--<meta charset="utf-8" />-->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="jquery.mobile-1.4.5.css" />
+	<link rel="stylesheet" href="panel-list.css">
+	<script src="jquery-1.11.3.js"></script>
+	<script src="jquery.mobile-1.4.5.js"></script>
+</head>
+<body>
+<div data-role="page" id="index">
+	<div data-role="header">
+		<h1>DashBoard</h1>
+		<a href="#left-panel" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-left ui-icon-bars">메뉴</a>
+		<a href="index.php" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-right ui-icon-home" data-transition="slidedown">홈</a>
+	</div><!-- /header -->
+
+	<div role="main" class="ui-content" class="my-page">
+		<center>
+		<?php
+		#echo "SERVER_ADDR [".$_SERVER['SERVER_NAME']."]<br>"; # 서버ip주소
+		#echo "<iframe src='http://".$_SERVER['SERVER_NAME']."/kh/graph.php' width='678' height='585' frameborder='0' scrolling='no' onload='javascript_:fncSetTop();'></iframe>";
+		?>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+		<h4 style="color: #bbbbbb;">Hello</h4>
+	</div><!-- /footer -->
+	
+	<div data-role="panel" id="left-panel" data-position="left" data-display="overlay" style="background-color: #f2f2f2;">
+        <ul data-role="listview">
+        	<li data-icon="delete" data-theme="b"><a href="#" data-rel="close">Close</a></li>
+        	<li data-icon="back" data-theme="b"><a href="#" data-rel="back">Back</a></li>
+			<li data-role="list-divider">Menu</li>
+			<li><a href="network.php">Network</a></li>
+			<li><a href="router.php">Routing</a></li>
+			<li data-role="collapsible" data-inset="false" data-iconpos="right">
+				<h2>Firewall</h2>
+				<ul data-role="listview">
+					<li><a href="firewall.php">PacketFilter</a></li>
+					<li><a href="firewall_web.php">WebFilter</a></li>
+					<li><a href="firewall_snat.php">SNAT</a></li>
+					<li><a href="firewall_dnat.php">DNAT</a></li>
+					<li><a href="firewall_masquerade.php">MASQUERADE</a></li>
+				</ul>
+			</li>
+			<li data-role="collapsible" data-inset="false" data-iconpos="right">
+				<h2>VPN</h2>
+				<ul data-role="listview">
+					<li><a href="vpn.php">User</a></li>
+					<li><a href="vpn_pptp.php">pptp</a></li>
+					<li><a href="vpn_openvpn.php">openvpn</a><li>
+				</ul>
+			</li>
+			<li><a href="log.php">Log</a></li>
+			<li><a href="monitoring.php">Monitoring</a></li>
+		</ul>
+    </div><!-- /panel -->
+
+</div><!-- /page -->
+</body>
+</html>
